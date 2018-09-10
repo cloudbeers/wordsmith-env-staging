@@ -1,0 +1,9 @@
+image:
+  pullPolicy: Always
+database:
+  url: jdbc:postgresql://wordsmith-preview.ca3tifbqfpuf.us-east-1.rds.amazonaws.com:5432/wordsmith
+  # username
+  # password
+ingress:
+  hosts:
+    - api.staging.wordsmith.beescloud.com
