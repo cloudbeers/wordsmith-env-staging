@@ -1,7 +1,7 @@
 image:
   pullPolicy: Always
 database:
-  url: jdbc:postgresql://wordsmith-preview.ca3tifbqfpuf.us-east-1.rds.amazonaws.com:5432/wordsmith
+  url: jdbc:postgresql://wordsmith-staging.ca3tifbqfpuf.us-east-1.rds.amazonaws.com:5432/wordsmith
   # username
   # password
 ingress:
