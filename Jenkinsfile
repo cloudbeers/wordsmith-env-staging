@@ -47,7 +47,7 @@ spec:
               withCredentials (jenkinsCredentials) {
                   sh """
                       helm fetch ${application.chart} --version=${application.version}
-                      helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --namespace ${environment.namespace} --wait ${arguments.join(' ')}
+                      helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --namespace ${environment.namespace} --wait ${arguments.join(' ')}
                   """
               }
           }
