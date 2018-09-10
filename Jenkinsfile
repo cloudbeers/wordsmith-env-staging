@@ -45,13 +45,33 @@ spec:
                   arguments.add "--values ${application.values}"
               }
               withCredentials (jenkinsCredentials) {
+                try {
                   sh """
                       helm fetch ${application.chart} --version=${application.version}
                       helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --namespace ${environment.namespace} --wait ${arguments.join(' ')}
                   """
+                } catch (Exception e) {
+                  def deploymentIssue = [fields: [
+                               project: [key: 'WOR'],
+                               summary: "Deployment failure: ${application.release}",
+                               description: "Please go to ${BUILD_URL} and verify the deployment logs",
+                               issuetype: [name: 'Bug']]]
+
+                  jiraResponse = jiraNewIssue issue: deploymentIssue
+                  echo "https://jira.beescloud.com/projects/WOR/issues/${jiraResponse.data.key}"
+                  throw e
+                }                
               }
           }
           archiveArtifacts artifacts: "*.tgz", fingerprint: true
+          def deploymentIssue = [fields: [
+             project: [key: 'WOR'],
+             summary: "Verify deployment on ${environment.namespace}",
+             description: "Please go to ${BUILD_URL} and verify the deployment logs",
+             issuetype: [name: 'Task']]]
+
+          jiraResponse = jiraNewIssue issue: deploymentIssue
+          echo "Jira verification task created https://jira.beescloud.com/projects/WOR/issues/${jiraResponse.data.key}"
         } // container
     } // stage
   } // node
