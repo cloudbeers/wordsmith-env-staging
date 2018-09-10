@@ -27,6 +27,11 @@ spec:
         container('helm') {
           git 'https://github.com/cloudbeers/wordsmith-env-staging.git'
           def environment = readYaml file: 'environment.yaml'
+          sh """
+             helm init --client-only
+             helm repo add wordsmith https://charts.wordsmith.beescloud.com
+             helm repo update
+          """
           echo ("$environment")
           for (application in environment.applications) {
               echo "chart ${application.class} $application"
@@ -39,18 +44,20 @@ spec:
                 arguments.add("--set ${credentials.helmUsernameParameter}=\$CREDS_${idx}_USR,${credentials.helmPasswordParameter}=\$CREDS_${idx}_PSW")
               }
               
-              if (application.values != null && !application.values.empty) {
+              if (application['values'] != null && ! application['values'].trim().isEmpty()) {
                   arguments.add "--values ${application.values}"
+              } else {
+                  echo "${application.release} has NO values"
               }
               withCredentials (jenkinsCredentials) {
                   sh """
-                      echo helm fetch ${application.chart} --version=${application.version}
-                      echo helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --wait ${arguments.join(' ')}
+                      helm fetch ${application.chart} --version=${application.version}
+                      helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --wait ${arguments.join(' ')}
                   """
                   sh "env"
               }
-              archiveArtifacts artifacts: "${application.chart}-${APPLICATION_VERSION}.tgz", fingerprint: true
           }
+          archiveArtifacts artifacts: "*.tgz", fingerprint: true
         } // container
     } // stage
   } // node

@@ -8,11 +8,12 @@ applications:
   - release: wordsmith-api-production
     chart: wordsmith/wordsmith-api
     version: 1.0.8
-    probe: https://api.staging.wordsmith.beescloud.com/actuator/health    
+    probe: https://api.staging.wordsmith.beescloud.com/actuator/health
+    values: wordsmith-api/values.yaml
     credentials:
       - jenkinsCredentialsId: postgresql.staging
-        helmUsernameParameter: database.username 
-        helmPasswordParameter: database.password 
+        helmUsernameParameter: database.username
+        helmPasswordParameter: database.password
   - release: wordsmith-front-production
     chart: wordsmith/wordsmith-front
     version: 20180910-1259
