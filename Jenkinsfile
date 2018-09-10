@@ -25,7 +25,7 @@ spec:
   node (label) {
     stage('Install Helm Charts') {
         container('helm') {
-          git 'https://github.com/cloudbeers/wordsmith-env-staging.git'
+          checkout scm
           def environment = readYaml file: 'environment.yaml'
           sh """
              helm init --client-only
