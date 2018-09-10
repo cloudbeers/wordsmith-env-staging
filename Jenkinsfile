@@ -32,10 +32,7 @@ spec:
              helm repo add wordsmith https://charts.wordsmith.beescloud.com
              helm repo update
           """
-          echo ("$environment")
           for (application in environment.applications) {
-              echo "chart ${application.class} $application"
-
               def jenkinsCredentials = []
               def arguments = []
               def idx=0
@@ -50,7 +47,7 @@ spec:
               withCredentials (jenkinsCredentials) {
                   sh """
                       helm fetch ${application.chart} --version=${application.version}
-                      helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --wait ${arguments.join(' ')}
+                      helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --namespace ${environment.namespace} --wait ${arguments.join(' ')}
                   """
               }
           }
