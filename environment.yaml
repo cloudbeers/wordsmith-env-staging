@@ -18,5 +18,6 @@ applications:
   - release: wordsmith-front-staging
     chart: wordsmith/wordsmith-front
     version: 20180910-2020
+    values: wordsmith-front/values.yaml
 
 
