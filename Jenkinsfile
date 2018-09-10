@@ -44,17 +44,14 @@ spec:
                 arguments.add("--set ${credentials.helmUsernameParameter}=\$CREDS_${idx}_USR,${credentials.helmPasswordParameter}=\$CREDS_${idx}_PSW")
               }
               
-              if (application['values'] != null && ! application['values'].trim().isEmpty()) {
+              if (application.values?.trim()) {
                   arguments.add "--values ${application.values}"
-              } else {
-                  echo "${application.release} has NO values"
               }
               withCredentials (jenkinsCredentials) {
                   sh """
                       helm fetch ${application.chart} --version=${application.version}
                       helm upgrade --install ${application.release} ${application.chart} --version=${application.version} --wait ${arguments.join(' ')}
                   """
-                  sh "env"
               }
           }
           archiveArtifacts artifacts: "*.tgz", fingerprint: true
