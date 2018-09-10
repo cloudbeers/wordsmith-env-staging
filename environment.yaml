@@ -18,6 +18,7 @@ applications:
   - release: wordsmith-front-staging
     chart: wordsmith/wordsmith-front
     version: 20180910-2020
+    probe: https://front.staging.wordsmith.beescloud.com/
     values: wordsmith-front/values.yaml
 
 
