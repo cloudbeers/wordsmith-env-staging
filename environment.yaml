@@ -11,7 +11,7 @@ database:
 applications:
   - release: wordsmith-api-staging
     chart: wordsmith/wordsmith-api
-    version: 1.0.11
+    version: 1.0.15
     values: wordsmith-api/values.yaml
     credentials:
       - jenkinsCredentialsId: postgresql.staging
