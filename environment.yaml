@@ -10,7 +10,7 @@ database:
 applications:
   - release: wordsmith-api-staging
     chart: wordsmith/wordsmith-api
-    version: 1.0.10
+    version: 1.0.11
     probe: https://api.staging.wordsmith.beescloud.com/actuator/health
     values: wordsmith-api/values.yaml
     credentials:
