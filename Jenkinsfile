@@ -57,14 +57,16 @@ spec:
                    # Update the database
                    ./mvnw $MAVEN_OPTS liquibase:update -Dliquibase.changeLogFile=${changeLogFile}
                 """
-                archiveArtifacts artifacts: changeLogFile, fingerprint: true
               } // for
 
               DB_TAG_VERSION = readFile("target/VERSION")
               sh """
                 # Create a tag in order to rollback if needed
                 ./mvnw $MAVEN_OPTS liquibase:tag -Dliquibase.tag=${DB_TAG_VERSION}
+
+                cat src/main/liquibase/changelog-* > target/liquibaseConcatenatedChangeLogs.txt
               """
+              archiveArtifacts artifacts: "target/liquibaseConcatenatedChangeLogs.txt", fingerprint: true
             } // withCredentials
           } // withEnvironment
          } // dir
