@@ -28,10 +28,48 @@ spec:
 """
     ) {
   node (label) {
+    def environment
+    stage('Load Environment Definition') {
+      checkout scm
+      environment = readYaml file: 'environment.yaml'
+    }
+    stage('Update database') {
+      container('jdk') {
+        dir ('target/wordsmith-db') {
+          git "https://github.com/cloudbeers/wordsmith-db.git"
+
+          withEnv(["PG_SQL_JDBC_URL=${environment.database.url}"]) {
+
+            withCredentials([usernamePassword(
+             credentialsId: "${environment.database.credentials.jenkinsCredentialsId}", 
+             passwordVariable: 'PG_SQL_CREDS_PSW', usernameVariable: 'PG_SQL_CREDS_USR')]) {
+
+              withMaven(mavenOpts: '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn') {
+                  sh "./mvnw validate"
+
+                  for (liquibaseChangeLog: environment.database.liquibaseChangeLogs) {
+                    sh """
+                       # Display all changes which will be applied by the Update command
+                       ./mvnw liquibase:status -Dliquibase.changeLogFile=src/main/resources/liquibase/changelog-${liquibaseChangeLog}.xml
+                       
+                       # Update the database
+                       ./mvnw liquibase:update -Dliquibase.changeLogFile=src/main/resources/liquibase/changelog-${liquibaseChangeLog}.xml
+                    """
+                  } // for
+
+                  DB_TAG_VERSION = readFile("target/VERSION")
+                  sh """
+                    # Create a tag in order to rollback if needed
+                    ./mvnw liquibase tag:${DB_TAG_VERSION}
+                  """
+              } // withMaven
+            } // withCredentials
+          } // withEnvironment
+         } // dir
+      } // container
+    } // stage
     stage('Install Helm Charts') {
         container('helm') {
-          checkout scm
-          def environment = readYaml file: 'environment.yaml'
           sh """
              helm init --client-only
              helm repo add wordsmith https://charts.wordsmith.beescloud.com
