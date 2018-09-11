@@ -4,6 +4,7 @@ database:
   liquibaseChangeLogs:
     - v1.0.0
     - v1.1.0
+    - v1.2.0
   url: jdbc:postgresql://wordsmith-staging.ca3tifbqfpuf.us-east-1.rds.amazonaws.com:5432/wordsmith
   credentials: 
       jenkinsCredentialsId: postgresql-admin.staging
