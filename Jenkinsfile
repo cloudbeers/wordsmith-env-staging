@@ -62,7 +62,7 @@ spec:
                   DB_TAG_VERSION = readFile("target/VERSION")
                   sh """
                     # Create a tag in order to rollback if needed
-                    ./mvnw liquibase tag:${DB_TAG_VERSION}
+                    ./mvnw liquibase:tag -Dliquibase.tag=${DB_TAG_VERSION}
                   """
               } // withMaven
             } // withCredentials
