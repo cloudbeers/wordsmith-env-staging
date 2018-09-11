@@ -6,7 +6,7 @@ database:
     - v1.1.0
   url: jdbc:postgresql://wordsmith-staging.ca3tifbqfpuf.us-east-1.rds.amazonaws.com:5432/wordsmith
   credentials: 
-      jenkinsCredentialsId: postgresql.staging
+      jenkinsCredentialsId: postgresql-admin.staging
 applications:
   - release: wordsmith-api-staging
     chart: wordsmith/wordsmith-api
