@@ -27,6 +27,7 @@ spec:
       tty: true
 """
     ) {
+  properties([disableConcurrentBuilds()])
   node (label) {
     def environment
     stage('Load Environment Definition') {
