@@ -47,14 +47,16 @@ spec:
               withMaven(mavenOpts: '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn') {
                   sh "./mvnw validate"
 
-                  for (liquibaseChangeLog: environment.database.liquibaseChangeLogs) {
+                  for (liquibaseChangeLog in environment.database.liquibaseChangeLogs) {
+                    changeLogFile = "src/main/liquibase/changelog-${liquibaseChangeLog}.xml"
                     sh """
                        # Display all changes which will be applied by the Update command
-                       ./mvnw liquibase:status -Dliquibase.changeLogFile=src/main/resources/liquibase/changelog-${liquibaseChangeLog}.xml
+                       ./mvnw liquibase:status -Dliquibase.changeLogFile=${changeLogFile}
                        
                        # Update the database
-                       ./mvnw liquibase:update -Dliquibase.changeLogFile=src/main/resources/liquibase/changelog-${liquibaseChangeLog}.xml
+                       ./mvnw liquibase:update -Dliquibase.changeLogFile=${changeLogFile}
                     """
+                    archiveArtifacts artifacts: changeLogFile, fingerprint: true
                   } // for
 
                   DB_TAG_VERSION = readFile("target/VERSION")
