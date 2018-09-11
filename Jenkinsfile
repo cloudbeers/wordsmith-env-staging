@@ -20,6 +20,11 @@ spec:
       command:
       - cat
       tty: true
+    - name: jdk
+      image: openjdk:8-jdk
+      command:
+      - cat
+      tty: true
 """
     ) {
   node (label) {
