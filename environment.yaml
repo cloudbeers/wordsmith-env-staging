@@ -12,7 +12,6 @@ applications:
   - release: wordsmith-api-staging
     chart: wordsmith/wordsmith-api
     version: 1.0.11
-    probe: https://api.staging.wordsmith.beescloud.com/actuator/health
     values: wordsmith-api/values.yaml
     credentials:
       - jenkinsCredentialsId: postgresql.staging
@@ -20,8 +19,7 @@ applications:
         helmPasswordParameter: database.password
   - release: wordsmith-front-staging
     chart: wordsmith/wordsmith-front
-    version: 20180910-2020
-    probe: https://front.staging.wordsmith.beescloud.com/
+    version: 20180911-1318
     values: wordsmith-front/values.yaml
 
 
