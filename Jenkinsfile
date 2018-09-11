@@ -38,33 +38,31 @@ spec:
         dir ('target/wordsmith-db') {
           git "https://github.com/cloudbeers/wordsmith-db.git"
 
-          withEnv(["PG_SQL_JDBC_URL=${environment.database.url}"]) {
+          withEnv(["PG_SQL_JDBC_URL=${environment.database.url}", "MAVEN_OPTS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"]) {
 
             withCredentials([usernamePassword(
              credentialsId: "${environment.database.credentials.jenkinsCredentialsId}", 
              passwordVariable: 'PG_SQL_CREDS_PSW', usernameVariable: 'PG_SQL_CREDS_USR')]) {
 
-              withMaven(mavenOpts: '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn') {
-                  sh "./mvnw validate"
+              sh "./mvnw validate"
 
-                  for (liquibaseChangeLog in environment.database.liquibaseChangeLogs) {
-                    changeLogFile = "src/main/liquibase/changelog-${liquibaseChangeLog}.xml"
-                    sh """
-                       # Display all changes which will be applied by the Update command
-                       ./mvnw liquibase:status -Dliquibase.changeLogFile=${changeLogFile}
-                       
-                       # Update the database
-                       ./mvnw liquibase:update -Dliquibase.changeLogFile=${changeLogFile}
-                    """
-                    archiveArtifacts artifacts: changeLogFile, fingerprint: true
-                  } // for
+              for (liquibaseChangeLog in environment.database.liquibaseChangeLogs) {
+                changeLogFile = "src/main/liquibase/changelog-${liquibaseChangeLog}.xml"
+                sh """
+                   # Display all changes which will be applied by the Update command
+                   ./mvnw liquibase:status -Dliquibase.changeLogFile=${changeLogFile}
+                   
+                   # Update the database
+                   ./mvnw liquibase:update -Dliquibase.changeLogFile=${changeLogFile}
+                """
+                archiveArtifacts artifacts: changeLogFile, fingerprint: true
+              } // for
 
-                  DB_TAG_VERSION = readFile("target/VERSION")
-                  sh """
-                    # Create a tag in order to rollback if needed
-                    ./mvnw liquibase:tag -Dliquibase.tag=${DB_TAG_VERSION}
-                  """
-              } // withMaven
+              DB_TAG_VERSION = readFile("target/VERSION")
+              sh """
+                # Create a tag in order to rollback if needed
+                ./mvnw liquibase:tag -Dliquibase.tag=${DB_TAG_VERSION}
+              """
             } // withCredentials
           } // withEnvironment
          } // dir
@@ -105,7 +103,7 @@ spec:
                   jiraResponse = jiraNewIssue issue: deploymentIssue
                   echo "https://jira.beescloud.com/projects/WOR/issues/${jiraResponse.data.key}"
                   throw e
-                }                
+                }
               }
           }
           archiveArtifacts artifacts: "*.tgz", fingerprint: true
