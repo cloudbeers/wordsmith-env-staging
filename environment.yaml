@@ -19,7 +19,7 @@ applications:
         helmPasswordParameter: database.password
   - release: wordsmith-front-staging
     chart: wordsmith/wordsmith-front
-    version: 20180911-1318
+    version: 20180911-0902
     values: wordsmith-front/values.yaml
 
 
