@@ -21,5 +21,7 @@ applications:
     chart: wordsmith/wordsmith-front
     version: 20180911-0902
     values: wordsmith-front/values.yaml
-
-
+  - release: wordsmith-another-api-staging
+    chart: wordsmith/wordsmith-another-api
+    version: 20180912-0831
+    values: wordsmith-another-api/values.yaml

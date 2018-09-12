@@ -1,0 +1,5 @@
+image:
+  pullPolicy: Always
+ingress:
+  hosts:
+    - another-api.staging.wordsmith.beescloud.com
